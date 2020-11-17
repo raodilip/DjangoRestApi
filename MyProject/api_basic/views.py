@@ -7,6 +7,34 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
+import simplejson as json
+
+class ArticleAPIView(APIView):
+    def get(self, request):
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        # return JsonResponse(serializer.data, safe = False)
+        return Response(serializer.data)
+
+    @csrf_exempt
+    def post(self, request, format=None):
+        # print("request data",request.data)
+        # data = JSONParser().parse(request)
+        # data = json.loads(request.data)
+        # print(data)
+        serializer = ArticleSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            # return JsonResponse(serializer.data ,status=201)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # return JsonResponse(serializer.errors ,status=400)
+        return Response(serializer.errors ,status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
 # Create your views here.
