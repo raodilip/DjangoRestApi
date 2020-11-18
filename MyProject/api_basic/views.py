@@ -8,7 +8,21 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-import simplejson as json
+from rest_framework import generics
+from rest_framework import mixins
+
+
+class GenericAPIViewArticleList (generics.GenericAPIView , 
+     mixins.ListModelMixin , mixins.CreateModelMixin):
+      serializer_class = ArticleSerializer
+      queryset = Article.objects.all()
+
+      def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+      def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)   
+
 
 class ArticleAPIView(APIView):
     def get(self, request):
@@ -61,7 +75,21 @@ class ArticleDetails(APIView):
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)     
 
+class GenericAPIViewArticleDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
 
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 # Create your views here.
