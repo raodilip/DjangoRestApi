@@ -1,12 +1,19 @@
 from rest_framework import serializers
 from .models import Article
+from django.contrib.auth.models import User
 
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['id','title','author']
+        owner = serializers.ReadOnlyField(source='owner.username')
+        fields = ['id','title','author','owner']
 
-        
+class UserSerializer(serializers.ModelSerializer):
+    articles = serializers.PrimaryKeyRelatedField(many=True, queryset=Article.objects.all())
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'articles']        
         
     # title = serializers.CharField(max_length=100)
     # author = serializers.CharField(max_length=100)

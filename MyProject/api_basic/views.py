@@ -3,6 +3,7 @@ from django.http import HttpResponse,JsonResponse
 from rest_framework.parsers import JSONParser
 from .models import Article
 from .serializers import ArticleSerializer
+from .serializers import UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,7 +13,18 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from rest_framework import permissions
+from .permissions import IsOwnerOrReadOnly
 
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 class GenericAPIViewArticleList (generics.GenericAPIView , 
      mixins.ListModelMixin , mixins.CreateModelMixin):
@@ -30,6 +42,7 @@ class GenericAPIViewArticleList (generics.GenericAPIView ,
 
 
 class ArticleAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get(self, request):
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
@@ -51,8 +64,11 @@ class ArticleAPIView(APIView):
         # return JsonResponse(serializer.errors ,status=400)
         return Response(serializer.errors ,status=status.HTTP_400_BAD_REQUEST)
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 class ArticleDetails(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
 
     def get_object(self, pk):
         try:
