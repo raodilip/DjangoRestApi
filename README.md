@@ -1,7 +1,7 @@
 #DjangoRestApi
 Rest Api Project to GET ,PUT ,POST and DELETE Articles hosted on pythonanywhere.com
 [Click Here To Get all articles](https://raodilip54.pythonanywhere.com/article/)
-![Article](Article.png)
+![Article](../Article.png)
 
 Usage to get specific article: 
 Id is the primary key of articles .
@@ -9,7 +9,7 @@ Articles are available starting from id 2.
 To get articles with different id , just put the number in place of id-no in below link. 
 raodilip54.pythonanywhere.com/detail/id-no
 [Click Here To Get details of  article with id2](https://raodilip54.pythonanywhere.com/detail/2)
-![Specific Article](Detail.png)
+![Specific Article](../Detail.png)
 
 [Click Here To Get all Users](https://raodilip54.pythonanywhere.com/users/)
 
